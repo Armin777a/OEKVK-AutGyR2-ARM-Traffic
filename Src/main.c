@@ -139,6 +139,8 @@ int main(void)
   PortInitialization();									// Initializes the ports
   Start_NewProgram(PROGRAM_Normal_All_Red);				// Starts the light's program
 
+
+
   // Start timer
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_TIM_Base_Start_IT(&htim3);
@@ -155,6 +157,8 @@ int main(void)
 		led |= Check_ButtonTrainRight()&0x01 << 1;				// Checks the right pedestrian button
 		led |= Check_ButtonServiceOn()&0x01 << 2;				// Checks the left pedestrian button
 		led |= Check_ButtonServiceOff()&0x01 << 3;				// Checks the left train button*/
+	  //Controller_TrafficLight();						// Runs the traffic light controller
+	  //Set_State_Traffic(STATE_ON, 4);
 
 
 	  if (ENABLE_DEBUG_MODE) {							// If debug mode is enabled
@@ -561,6 +565,7 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+	  return;
   }
   /* USER CODE END Error_Handler_Debug */
 }

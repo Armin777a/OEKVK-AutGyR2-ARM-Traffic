@@ -174,6 +174,9 @@ uint8_t MasterTable[53][31] = {
 
 // Ports, pins and DDRs
 GPIO_TypeDef* Ports[9] = {0, GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOF, GPIOG, GPIOH};
+uint16_t Pins[16] = {GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_2, GPIO_PIN_3, GPIO_PIN_4,
+					GPIO_PIN_5, GPIO_PIN_6, GPIO_PIN_7, GPIO_PIN_8, GPIO_PIN_9, GPIO_PIN_10,
+					GPIO_PIN_11, GPIO_PIN_12,GPIO_PIN_13, GPIO_PIN_14, GPIO_PIN_15};
 
 // Service mode state
 uint8_t ServiceMode = 0;
@@ -720,12 +723,12 @@ void SetDDR_TrafficLight(uint8_t lightID) {
 		GPIO_InitTypeDef GPIO_InitStruct;														//   Initializes the GPIO struct
 
 		HAL_GPIO_WritePin(Ports[Get_Port_Traffic(lightID)],
-						  Get_Pin_Traffic(lightID),
+						  Pins[Get_Pin_Traffic(lightID)],
 						  GPIO_PIN_RESET);	                                            //   Sets the pin to low (turns off the light
 
 		EnableGPIOClock(Get_Port_Traffic(lightID));										//   Enables the clock for the port
 
-		GPIO_InitStruct.Pin = Get_Pin_Traffic(lightID);										    //   Sets the pin
+		GPIO_InitStruct.Pin = Pins[Get_Pin_Traffic(lightID)];										    //   Sets the pin
 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;											    //   Sets the pin as output
 		GPIO_InitStruct.Pull = GPIO_NOPULL;													    //   Sets the pull-up resistor
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;											//   Sets the speed of the pin
@@ -741,12 +744,12 @@ void SetDDR_TrainLight(uint8_t lightID) {
 		GPIO_InitTypeDef GPIO_InitStruct;														//   Initializes the GPIO struct
 
 		HAL_GPIO_WritePin(Ports[Get_Port_Train(lightID)],
-						  Get_Pin_Train(lightID),
+						  Pins[Get_Pin_Train(lightID)],
 						  GPIO_PIN_RESET);	                                            //   Sets the pin to low (turns off the light
 
 		EnableGPIOClock(Get_Port_Train(lightID));									//   Enables the clock for the port
 
-		GPIO_InitStruct.Pin = Get_Pin_Traffic(lightID + TRAIN_Pin_Offset);			            //   Sets the pin
+		GPIO_InitStruct.Pin = Pins[Get_Pin_Traffic(lightID + TRAIN_Pin_Offset)];			            //   Sets the pin
 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;											    //   Sets the pin as output
 		GPIO_InitStruct.Pull = GPIO_NOPULL;													    //   Sets the pull-up resistor
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;											//   Sets the speed of the pin
@@ -761,13 +764,13 @@ void SetDDR_TrainButton(uint8_t buttonID) {
 		GPIO_InitTypeDef GPIO_InitStruct;														//   Initializes the GPIO struct
 
 		HAL_GPIO_WritePin(Ports[Get_Port_Train(buttonID)],
-		                  Get_Pin_Train(buttonID + TRAIN_Pin_Offset),
+		                  Pins[Get_Pin_Train(buttonID + TRAIN_Pin_Offset)],
 						  GPIO_PIN_RESET);	                                            //   Sets the pin to low (turns off the light
 
 		EnableGPIOClock(Get_Port_Train(buttonID));									//   Enables the clock for the port
 
 		// Configure the GPIO pin
-		GPIO_InitStruct.Pin = Get_Pin_Train(buttonID + TRAIN_Pin_Offset);
+		GPIO_InitStruct.Pin = Pins[Get_Pin_Train(buttonID + TRAIN_Pin_Offset)];
 		GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
 		GPIO_InitStruct.Pull = GPIO_PULLUP;
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -782,13 +785,13 @@ void SetDDR_ServiceButton(uint8_t buttonID) {
 		GPIO_InitTypeDef GPIO_InitStruct;
 
 		HAL_GPIO_WritePin(Ports[Get_Data_MasterTable(buttonID, DATA_Service_Button_Port)],
-		                  Get_Data_MasterTable(buttonID, DATA_Service_Button_Pin),
+		                  Pins[Get_Data_MasterTable(buttonID, DATA_Service_Button_Pin)],
 						  GPIO_PIN_RESET);
 
 		EnableGPIOClock(Get_Data_MasterTable(buttonID, DATA_Service_Button_Port));
 
 		// Configure the GPIO pin
-		GPIO_InitStruct.Pin = Get_Data_MasterTable(buttonID, DATA_Service_Button_Pin);
+		GPIO_InitStruct.Pin = Pins[Get_Data_MasterTable(buttonID, DATA_Service_Button_Pin)];
 		GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
 		GPIO_InitStruct.Pull = GPIO_PULLUP;
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -912,15 +915,15 @@ void Set_TrafficLight_MasterTable(uint8_t lightID) {
 void Set_State_Traffic(uint8_t newState, uint8_t lightID) {
 	switch (newState) {																	// Check's the input parameter's state
 		case STATE_OFF:																	// Set it to off
-			HAL_GPIO_WritePin(Ports[Get_Port_Traffic(lightID)], Get_Pin_Traffic(lightID),
+			HAL_GPIO_WritePin(Ports[Get_Port_Traffic(lightID)], Pins[Get_Pin_Traffic(lightID)],
 							  GPIO_PIN_RESET);                                  //   Turn's the light off
 			return;
 		case STATE_ON:																	// Set it to on
-			HAL_GPIO_WritePin(Ports[Get_Port_Traffic(lightID)], Get_Pin_Traffic(lightID),
+			HAL_GPIO_WritePin(Ports[Get_Port_Traffic(lightID)], Pins[Get_Pin_Traffic(lightID)],
 							  GPIO_PIN_SET);                                    //   Turn's the light on
 			return;
 		case STATE_BLINK:																// Set it to blinking
-			HAL_GPIO_TogglePin(Ports[Get_Port_Traffic(lightID)], Get_Pin_Traffic(lightID));
+			HAL_GPIO_TogglePin(Ports[Get_Port_Traffic(lightID)], Pins[Get_Pin_Traffic(lightID)]);
 			return;
 
 			// In case of an error it switches to service mode
@@ -987,17 +990,17 @@ void Set_State_Train(uint8_t newState, uint8_t lightID) {
 	switch (newState) {																					// Checks the parameter's state
 		case STATE_OFF:																					// Set it to off
 			HAL_GPIO_WritePin(Ports[Get_Port_Train(lightID)],
-							  Get_Pin_Train(lightID + TRAIN_Pin_Offset),
+			                  Pins[Get_Pin_Train(lightID + TRAIN_Pin_Offset)],
 							  GPIO_PIN_RESET);													//   Turn's the light off
 			return;
 		case STATE_ON:      																			// Set it to on
 			HAL_GPIO_WritePin(Ports[Get_Port_Train(lightID)],
-							  Get_Pin_Train(lightID + TRAIN_Pin_Offset),
+			                  Pins[Get_Pin_Train(lightID + TRAIN_Pin_Offset)],
 							  GPIO_PIN_SET);													//   Turn's the light on
 			return;
 		case STATE_BLINK:																				// Set it to blinking
 			HAL_GPIO_TogglePin(Ports[Get_Port_Train(lightID)],
-							   Get_Pin_Train(lightID + TRAIN_Pin_Offset));	                //   It switches the light to the opposite state
+			                   Pins[Get_Pin_Train(lightID + TRAIN_Pin_Offset)]);	                //   It switches the light to the opposite state
 			return;
 
 			// In case of an error it switches to service mode
@@ -1075,25 +1078,25 @@ uint8_t Get_ButtonHoldManager(uint8_t buttonID) {
 uint8_t Check_ButtonTrainLeft() {
 	// It has a negation because the button is normally closed
 	return HAL_GPIO_ReadPin(Ports[Get_Port_Train(DATA_Train_Button_Left_Port)],
-							Get_Pin_Train(DATA_Train_Button_Left_Port + TRAIN_Pin_Offset));
+	                        Pins[Get_Pin_Train(DATA_Train_Button_Left_Port + TRAIN_Pin_Offset)]);
 }
 
 // Checks if the right train button is pressed
 uint8_t Check_ButtonTrainRight() {
 	// It has a negation because the button is normally closed
 	return HAL_GPIO_ReadPin(Ports[Get_Port_Train(DATA_Train_Button_Right_Port)],
-						   Get_Pin_Train(DATA_Train_Button_Right_Port + TRAIN_Pin_Offset));
+	                        Pins[Get_Pin_Train(DATA_Train_Button_Right_Port + TRAIN_Pin_Offset)]);
 }
 
 // FOR THE SERVICE MODE BUTTON
 // Checks if the service mode on button is pressed
 uint8_t Check_ButtonServiceOn() {
 	return HAL_GPIO_ReadPin(Ports[Get_Data_MasterTable(DATA_Service_Button_On, DATA_Service_Button_Port)],
-	                        Get_Data_MasterTable(DATA_Service_Button_On, DATA_Service_Button_Pin));
+	                        Pins[Get_Data_MasterTable(DATA_Service_Button_On, DATA_Service_Button_Pin)]);
 }
 
 // Checks if the service mode off button is pressed
 uint8_t Check_ButtonServiceOff() {
 	return HAL_GPIO_ReadPin(Ports[Get_Data_MasterTable(DATA_Service_Button_Off, DATA_Service_Button_Port)],
-	                        Get_Data_MasterTable(DATA_Service_Button_Off, DATA_Service_Button_Pin));
+	                        Pins[Get_Data_MasterTable(DATA_Service_Button_Off, DATA_Service_Button_Pin)]);
 }
