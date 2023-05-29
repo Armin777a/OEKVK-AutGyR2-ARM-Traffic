@@ -32,6 +32,7 @@
 // LED 1 - Traffic light yellow
 // LED 0 - Traffic light red
 
+/*
 uint8_t MasterTable[21][11] = {
 	// Data Header
 	{6,	5,											4, 4, 4, 0,		0, 5, 4, 4,		255},		// 0 - PORT				+ Service Button On
@@ -76,20 +77,20 @@ uint8_t MasterTable[21][11] = {
 	// In case of overflow
 	{PROGRAM_ServiceMode,	1,							0, 0, 0, 0,		0, 0, 0, 0,		255}	// 20 - BLANK
 };
-
+*/
 
 
 
 // Master table for the real traffic model
-/*
+
 uint8_t MasterTable[53][31] = {
 		// Data Header
-		{7,	4,											0, 5, 5, 5,		0, 5, 5, 5,		1, 1, 1, 0,		1, 1, 1, 1,		3, 3, 3, 0,		1, 3, 3, 0,		3, 3, 3, 6,		255},	// 0 - PORT				+ Service Button On
-		{7,	3,											0, 2, 3, 3,		0, 6, 7, 7,		0, 1, 2, 0,		3, 4, 5, 6,		2, 3, 4, 0,		7, 0, 1, 0,		5, 6, 7, 0,		255},	// 1 - PIN				+ Service Button Off
+		{6,	5,											0, 2, 2, 2,     0, 4, 4, 4,     6, 6, 5, 0,     5, 6, 5, 5,     5, 5, 5, 0,     7, 7, 5, 0,     5, 5, 2, 1,     255},	// 0 - PORT				+ Service Button On
+		{6,	2,											0, 3, 11, 11,   0, 14, 15, 15,  12, 13, 9, 0,   11, 14, 13, 15, 7, 10, 12, 0,   14, 9, 8, 0,    14, 15, 10, 5,  255},	// 1 - PIN				+ Service Button Off
 		{0,	0,											2, 0, 0, 0,		2, 0, 0, 0,		1, 0, 0, 0,		1, 0, 0, 0,		1, 0, 0, 0,		1, 0, 0, 0,		1, 0, 0, 0,		255},	// 2 - TYPE / DELAY
 
 		// Train ports and pins
-		{6, 3,		6, 1,		6, 2,		5, 4,		5, 5,		255},																										// 3 - TRAIN
+		{2, 9,		2, 8,		2, 5,		1, 6,		1, 7,		255},																										// 3 - TRAIN
 
 		// In case of overflow
 		{PROGRAM_ServiceMode,	0,						0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		255},	// 4 - BLANK
@@ -162,7 +163,7 @@ uint8_t MasterTable[53][31] = {
 		// In case of overflow
 		{PROGRAM_ServiceMode,	0,						0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		255},	// 52 - BLANK
 };
-*/
+
 
 
 

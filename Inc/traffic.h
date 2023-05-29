@@ -33,23 +33,23 @@
 
 
 // Set the start address of the program
-/*
+
 #define PROGRAM_ServiceMode				50								// Service mode's address in the master table
 #define PROGRAM_Normal					8								// Normal mode's address in the master table
 #define PROGRAM_Normal_All_Red			7								// Normal mode's all red state's address in the master table
 #define PROGRAM_Train_All_Red			25								// Train mode's all red state's address in the master table
 #define PROGRAM_Train					35								// Train mode's address in the master table
 #define PROGRAM_Volatile				5								// Volatile mode's address in the master table
-*/
+
 //Set adresses of the program for DEBUG mode
+/*
 #define PROGRAM_ServiceMode				13								// Service mode's address in the master table
 #define PROGRAM_Normal					8								// Normal mode's address in the master table
 #define PROGRAM_Normal_All_Red			7								// Normal mode's all red state's address in the master table
 #define PROGRAM_Train_All_Red			16								// Train mode's all red state's address in the master table
 #define PROGRAM_Train					17								// Train mode's address in the master table
 #define PROGRAM_Volatile				5								// Volatile mode's address in the master table
-
-
+*/
 
 
 //////////////////////////////////////////////////////////////////////////
