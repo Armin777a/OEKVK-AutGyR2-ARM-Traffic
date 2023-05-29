@@ -85,8 +85,8 @@ uint8_t MasterTable[21][11] = {
 
 uint8_t MasterTable[53][31] = {
 		// Data Header
-		{6,	5,											0, 2, 2, 2,     0, 4, 4, 4,     6, 6, 5, 0,     5, 6, 5, 5,     5, 5, 5, 0,     7, 7, 5, 0,     5, 5, 2, 1,     255},	// 0 - PORT				+ Service Button On
-		{6,	2,											0, 3, 11, 11,   0, 14, 15, 15,  12, 13, 9, 0,   11, 14, 13, 15, 7, 10, 12, 0,   14, 9, 8, 0,    14, 15, 10, 5,  255},	// 1 - PIN				+ Service Button Off
+		{3,	13,											0, 2, 2, 2,     0, 4, 4, 4,     6, 6, 5, 0,     5, 6, 5, 5,     5, 5, 5, 0,     7, 7, 5, 0,     5, 5, 2, 1,     255},	// 0 - PORT				+ Service Button On
+		{3,	13,											0, 3, 11, 11,   0, 14, 15, 15,  12, 13, 9, 0,   11, 14, 13, 15, 7, 10, 12, 0,   14, 9, 8, 0,    14, 15, 10, 5,  255},	// 1 - PIN				+ Service Button Off
 		{0,	0,											2, 0, 0, 0,		2, 0, 0, 0,		1, 0, 0, 0,		1, 0, 0, 0,		1, 0, 0, 0,		1, 0, 0, 0,		1, 0, 0, 0,		255},	// 2 - TYPE / DELAY
 
 		// Train ports and pins
@@ -580,13 +580,13 @@ void Controller_Button() {
 
 	// Watch the state for the train button
 	switch (IsPressed_ButtonTrain()) {
-		case PRESSED_Service_Button_On:
+		case PRESSED_Train_Button_Left:
 			if(!Get_ButtonHoldManager(HOLD_Train_Button)) {			// While the button is held it only runs the function once
 				Set_ButtonHoldManager(HOLD_Train_Button);			// Sets that the button was pressed
 				Set_TrainFromLeft();								// Triggers a function, that a train is coming from the left
 			}
 			break;
-		case PRESSED_Service_Button_Off:
+		case PRESSED_Train_Button_Right:
 			if(!Get_ButtonHoldManager(HOLD_Train_Button)) {			// While the button is held it only runs the function once
 				Set_ButtonHoldManager(HOLD_Train_Button);			// Sets that the button was pressed
 				Set_TrainFromRight();								// Triggers a function, that a train is coming from the right
@@ -599,13 +599,18 @@ void Controller_Button() {
 
 	// Watch the state for the service mode button
 	switch (IsPressed_ButtonService()) {
-		case PRESSED_Train_Button_Left:
+		case PRESSED_Service_Button_On:
 			if(!Get_ButtonHoldManager(HOLD_Service_Button)) {		// While the button is held it only runs the function once
 				Set_ButtonHoldManager(HOLD_Service_Button);			// Sets that the button was pressed
-				Start_ServiceMode();								// Start's the service mode
+
+				if (!ServiceMode) {
+					Start_ServiceMode();                                // Start's the service mode
+				} else {
+					Stop_ServiceMode();                                 // Stop's the service mode
+				}
 			}
 			break;
-		case PRESSED_Train_Button_Right:
+		case PRESSED_Service_Button_Off:
 			if(!Get_ButtonHoldManager(HOLD_Service_Button)) {		// While the button is held it only runs the function once
 				Set_ButtonHoldManager(HOLD_Service_Button);			// Sets that the button was pressed
 				Stop_ServiceMode();									// Stop's the service mode
@@ -691,7 +696,7 @@ void PortInitialization() {
 
 	// Service Buttons
 	SetDDR(DDR_Service_Button, DATA_Service_Button_On);								// Sets the service mode on button's pins to input and sets the pull-up resistor
-	SetDDR(DDR_Service_Button, DATA_Service_Button_Off);							// Sets the service mode off button's pins to input and sets the pull-up resistor
+	//SetDDR(DDR_Service_Button, DATA_Service_Button_Off);							// Sets the service mode off button's pins to input and sets the pull-up resistor
 
 	if(ENABLE_DEBUG_MODE) {															// If the debug mode is enabled
 		InitLeds();															//   Initialize the LED pins on the board
@@ -750,7 +755,7 @@ void SetDDR_TrainLight(uint8_t lightID) {
 
 		EnableGPIOClock(Get_Port_Train(lightID));									//   Enables the clock for the port
 
-		GPIO_InitStruct.Pin = Pins[Get_Pin_Traffic(lightID + TRAIN_Pin_Offset)];			            //   Sets the pin
+		GPIO_InitStruct.Pin = Pins[Get_Pin_Train(lightID + TRAIN_Pin_Offset)];			            //   Sets the pin
 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;											    //   Sets the pin as output
 		GPIO_InitStruct.Pull = GPIO_NOPULL;													    //   Sets the pull-up resistor
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;											//   Sets the speed of the pin
@@ -794,7 +799,7 @@ void SetDDR_ServiceButton(uint8_t buttonID) {
 		// Configure the GPIO pin
 		GPIO_InitStruct.Pin = Pins[Get_Data_MasterTable(buttonID, DATA_Service_Button_Pin)];
 		GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-		GPIO_InitStruct.Pull = GPIO_PULLUP;
+		GPIO_InitStruct.Pull = GPIO_NOPULL;
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 
 		HAL_GPIO_Init(Ports[Get_Data_MasterTable(buttonID, DATA_Service_Button_Port)], &GPIO_InitStruct);
@@ -1078,26 +1083,26 @@ uint8_t Get_ButtonHoldManager(uint8_t buttonID) {
 // Checks if the left train button is pressed
 uint8_t Check_ButtonTrainLeft() {
 	// It has a negation because the button is normally closed
-	return HAL_GPIO_ReadPin(Ports[Get_Port_Train(DATA_Train_Button_Left_Port)],
-	                        Pins[Get_Pin_Train(DATA_Train_Button_Left_Port + TRAIN_Pin_Offset)]);
+	return !(HAL_GPIO_ReadPin(Ports[Get_Port_Train(DATA_Train_Button_Left_Port)],
+	                        Pins[Get_Pin_Train(DATA_Train_Button_Left_Port + TRAIN_Pin_Offset)]));
 }
 
 // Checks if the right train button is pressed
 uint8_t Check_ButtonTrainRight() {
 	// It has a negation because the button is normally closed
-	return HAL_GPIO_ReadPin(Ports[Get_Port_Train(DATA_Train_Button_Right_Port)],
-	                        Pins[Get_Pin_Train(DATA_Train_Button_Right_Port + TRAIN_Pin_Offset)]);
+	return (HAL_GPIO_ReadPin(Ports[Get_Port_Train(DATA_Train_Button_Right_Port)],
+	                        Pins[Get_Pin_Train(DATA_Train_Button_Right_Port + TRAIN_Pin_Offset)]));
 }
 
 // FOR THE SERVICE MODE BUTTON
 // Checks if the service mode on button is pressed
 uint8_t Check_ButtonServiceOn() {
-	return HAL_GPIO_ReadPin(Ports[Get_Data_MasterTable(DATA_Service_Button_On, DATA_Service_Button_Port)],
-	                        Pins[Get_Data_MasterTable(DATA_Service_Button_On, DATA_Service_Button_Pin)]);
+	return (HAL_GPIO_ReadPin(Ports[Get_Data_MasterTable(DATA_Service_Button_On, DATA_Service_Button_Port)],
+	                        Pins[Get_Data_MasterTable(DATA_Service_Button_On, DATA_Service_Button_Pin)]));
 }
 
 // Checks if the service mode off button is pressed
 uint8_t Check_ButtonServiceOff() {
-	return HAL_GPIO_ReadPin(Ports[Get_Data_MasterTable(DATA_Service_Button_Off, DATA_Service_Button_Port)],
-	                        Pins[Get_Data_MasterTable(DATA_Service_Button_Off, DATA_Service_Button_Pin)]);
+	return (HAL_GPIO_ReadPin(Ports[Get_Data_MasterTable(DATA_Service_Button_Off, DATA_Service_Button_Port)],
+	                        Pins[Get_Data_MasterTable(DATA_Service_Button_Off, DATA_Service_Button_Pin)]));
 }

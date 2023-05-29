@@ -132,7 +132,7 @@ int main(void)
   // Turn on user led
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
 
-  InitLeds();
+  //InitLeds();
   //LedOut(0xFFFF);
   //uint8_t led = 0x00;
 
@@ -159,6 +159,8 @@ int main(void)
 		led |= Check_ButtonServiceOff()&0x01 << 3;				// Checks the left train button*/
 	  //Controller_TrafficLight();						// Runs the traffic light controller
 	  //Set_State_Traffic(STATE_ON, 4);
+	  //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
+
 
 
 	  if (ENABLE_DEBUG_MODE) {							// If debug mode is enabled
